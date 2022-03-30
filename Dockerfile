@@ -1,5 +1,5 @@
 FROM ruby:2.7.5
-
+USER root
 # yarnパッケージ管理ツールをインストール
 RUN apt-get update && apt-get install -y curl apt-transport-https wget && \
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
@@ -11,11 +11,11 @@ RUN mkdir /myapp
 WORKDIR /myapp
 COPY Gemfile /myapp/Gemfile
 COPY Gemfile.lock /myapp/Gemfile.lock
-RUN bundle install
+RUN bundle update && bundle install
 COPY . /myapp
 
 RUN yarn install --check-files
-RUN bundle exec rails webpacker:compile
+RUN bundle update && bundle exec rails webpacker:compile
 
 # コンテナ起動時に実行させるスクリプトを追加
 COPY entrypoint.sh /usr/bin/
